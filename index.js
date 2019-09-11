@@ -44,14 +44,24 @@ const generateId = () => {
 }
 
 app.post('/api/persons', (req, res) => {
-  const body = req.body;
+  const name = req.body.name;
+  const number = req.body.number;
+
+  let errors = [];
+  if (!name) errors.push('name missing');
+  if (!number) errors.push('number missing');
+  if (persons.some(p => p.name === name))
+    errors.push('name must be unique');
+  if (errors.length)
+    return res.status(400).json({ error: errors });
+
   let id;
   try { id = generateId(); } catch (err) {
-    return res.status(406).send({ error: err.message })
+    return res.status(406).json({ error: err.message })
   }
   const person = {
-    name: body.name,
-    number: body.number,
+    name: name,
+    number: number,
     id: id,
   };
   persons = persons.concat(person);
