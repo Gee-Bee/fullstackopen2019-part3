@@ -1,6 +1,9 @@
 const express = require('express');
 const app = express();
 
+const bodyParser = require('body-parser');
+app.use(bodyParser.json());
+
 app.get('/info', (req, res) => {
   res.send(`
     <p>Phonebook has info for ${persons.length} people</p>
@@ -26,7 +29,34 @@ app.delete('/api/persons/:id', (req, res) => {
   const id = Number(req.params.id);
   persons = persons.filter(person => person.id !== id);
   res.status(204).end();
-})
+});
+
+const generateId = () => {
+  const limit = 100;
+  if (persons.length >= limit) {
+    throw new Error("Too many people");
+  }
+  let generatedId;
+  do {
+    generatedId = Math.floor(Math.random() * limit) + 1;
+  } while (persons.some(p => p.id === generatedId))
+  return generatedId;
+}
+
+app.post('/api/persons', (req, res) => {
+  const body = req.body;
+  let id;
+  try { id = generateId(); } catch (err) {
+    return res.status(406).send({ error: err.message })
+  }
+  const person = {
+    name: body.name,
+    number: body.number,
+    id: id,
+  };
+  persons = persons.concat(person);
+  res.status(201).send(person);
+});
 
 let persons = [
   {
