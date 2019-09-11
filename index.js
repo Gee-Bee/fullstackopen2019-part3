@@ -1,6 +1,9 @@
 const express = require('express');
 const app = express();
 
+const cors = require('cors');
+app.use(cors());
+
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 
@@ -61,7 +64,8 @@ app.post('/api/persons', (req, res) => {
 
   let id;
   try { id = generateId(); } catch (err) {
-    return res.status(406).json({ error: err.message })
+    errors.push(err.message)
+    return res.status(406).json({ error: errors })
   }
   const person = {
     name: name,
