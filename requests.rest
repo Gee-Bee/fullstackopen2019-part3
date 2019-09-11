@@ -1,0 +1,27 @@
+
+@host = http://localhost:3001
+
+### get all persons
+
+GET {{host}}/api/persons
+
+
+### get person
+
+GET {{host}}/api/persons/1
+
+###  delete person
+
+DELETE {{host}}/api/persons/1
+
+### create person
+
+POST {{host}}/api/persons
+Content-Type: application/json
+
+{
+  "name": "Greg Bunia",
+  "number": "60019202122"
+}
+
+###
