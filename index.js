@@ -4,6 +4,15 @@ const app = express();
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 
+const requestLogger = (req, res, next) => {
+  console.log('Method: ', req.method);
+  console.log('Path: ', req.path);
+  console.log('Body: ', req.body);
+  console.log('---');
+  next();
+}
+app.use(requestLogger);
+
 app.get('/info', (req, res) => {
   res.send(`
     <p>Phonebook has info for ${persons.length} people</p>
@@ -67,6 +76,11 @@ app.post('/api/persons', (req, res) => {
   persons = persons.concat(person);
   res.status(201).send(person);
 });
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+app.use(unknownEndpoint);
 
 let persons = [
   {
