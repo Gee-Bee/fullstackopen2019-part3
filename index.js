@@ -4,14 +4,8 @@ const app = express();
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 
-const requestLogger = (req, res, next) => {
-  console.log('Method: ', req.method);
-  console.log('Path: ', req.path);
-  console.log('Body: ', req.body);
-  console.log('---');
-  next();
-}
-app.use(requestLogger);
+const morgan = require('morgan');
+app.use(morgan('tiny'));
 
 app.get('/info', (req, res) => {
   res.send(`
