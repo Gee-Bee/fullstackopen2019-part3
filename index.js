@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const app = express();
 
@@ -13,6 +15,8 @@ const morgan = require('morgan');
 morgan.token('body', req => JSON.stringify(req.body));
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'));
 
+const Person = require('./models/person.js');
+
 app.get('/info', (req, res) => {
   res.send(`
     <p>Phonebook has info for ${persons.length} people</p>
@@ -21,7 +25,9 @@ app.get('/info', (req, res) => {
 })
 
 app.get('/api/persons', (req, res) => {
-  res.json(persons);
+  Person.find({}).then((people) => {
+    res.json(people.map(person => person.toJSON()));
+  })
 });
 
 app.get('/api/persons/:id', (req, res) => {
