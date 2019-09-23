@@ -3,14 +3,14 @@ const uniqueValidator = require('mongoose-unique-validator');
 
 mongoose.set('useFindAndModify', false);
 
-console.log("connecting to MongoDB", process.env.MONGODB_URI);
+console.log('connecting to MongoDB', process.env.MONGODB_URI);
 
 mongoose
   .connect(process.env.MONGODB_URI, {
     useUnifiedTopology: true,
     useNewUrlParser: true,
   })
-  .then(result => {
+  .then(() => {
     console.log('connected to MongoDB');
   })
   .catch(error => {

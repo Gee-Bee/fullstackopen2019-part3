@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 
 if ( process.argv.length !== 3 && process.argv.length !== 5 ) {
   console.log('Usage - arguments:')
-  console.log("  <mongodb password> - display all entries");
-  console.log("  <mongodb password> <entry name> <entry number> - add new entry");
+  console.log('  <mongodb password> - display all entries');
+  console.log('  <mongodb password> <entry name> <entry number> - add new entry');
   process.exit(1);
 }
 
@@ -24,7 +24,7 @@ const personSchema = mongoose.Schema({
 
 const Person = mongoose.model('Person', personSchema)
 
-listPeople = () => {
+const listPeople = () => {
   Person
     .find({})
     .then(result => {
@@ -36,7 +36,7 @@ listPeople = () => {
     });
 };
 
-addPerson = (obj) => {
+const addPerson = (obj) => {
   new Person(obj)
     .save()
     .then(result => {
@@ -52,5 +52,5 @@ if ( process.argv.length === 3 ) {
 if ( process.argv.length === 5 ) {
   const name = process.argv[3]
   const number = process.argv[4]
-  addPerson({name, number});
+  addPerson({ name, number });
 }
