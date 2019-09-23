@@ -46,18 +46,6 @@ app.delete('/api/persons/:id', (req, res) => {
   res.status(204).end();
 });
 
-const generateId = () => {
-  const limit = 100;
-  if (persons.length >= limit) {
-    throw new Error("Too many people");
-  }
-  let generatedId;
-  do {
-    generatedId = Math.floor(Math.random() * limit) + 1;
-  } while (persons.some(p => p.id === generatedId))
-  return generatedId;
-}
-
 app.post('/api/persons', (req, res) => {
   const name = req.body.name;
   const number = req.body.number;
@@ -65,23 +53,19 @@ app.post('/api/persons', (req, res) => {
   let errors = [];
   if (!name) errors.push('name missing');
   if (!number) errors.push('number missing');
-  if (persons.some(p => p.name === name))
-    errors.push('name must be unique');
+  // if (persons.some(p => p.name === name))
+  //   errors.push('name must be unique');
   if (errors.length)
     return res.status(400).json({ error: errors });
 
-  let id;
-  try { id = generateId(); } catch (err) {
-    errors.push(err.message)
-    return res.status(406).json({ error: errors })
-  }
-  const person = {
+  const person = new Person({
     name: name,
     number: number,
-    id: id,
-  };
-  persons = persons.concat(person);
-  res.status(201).send(person);
+  });
+
+  person.save().then(savedPerson => {
+    res.status(201).json(savedPerson);
+  })
 });
 
 const unknownEndpoint = (request, response) => {
