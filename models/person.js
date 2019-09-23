@@ -21,8 +21,12 @@ const personSchema = mongoose.Schema({
   name: {
     type: String,
     unique: true,
+    minlength: 3,
   },
-  number: String,
+  number: {
+    type: String,
+    match: [/(?=(.*\d){8,})/, 'must have at least 8 digits'],
+  },
 });
 
 personSchema.plugin(uniqueValidator);
