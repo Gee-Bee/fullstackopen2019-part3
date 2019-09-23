@@ -55,25 +55,14 @@ app.delete('/api/persons/:id', (req, res, next) => {
 });
 
 app.post('/api/persons', (req, res, next) => {
-  const name = req.body.name;
-  const number = req.body.number;
-
-  let errors = [];
-  if (!name) errors.push('name missing');
-  if (!number) errors.push('number missing');
-  // if (persons.some(p => p.name === name))
-  //   errors.push('name must be unique');
-  if (errors.length)
-    return res.status(400).json({ error: errors });
-
   const person = new Person({
-    name: name,
-    number: number,
+    name: req.body.name,
+    number: req.body.number,
   });
 
   person.save()
     .then(savedPerson => {
-      res.status(201).json(savedPerson);
+      res.status(201).json(savedPerson.toJSON());
     })
     .catch(error => next(error));
 });
@@ -100,34 +89,14 @@ const errorHandler = (error, req, res, next) => {
   if ( error.name === 'CastError' && error.kind === 'ObjectId' ) {
     return res.status(400).json({ error: 'marlformed id' });
   }
+  if ( error.name === 'ValidationError' ) {
+    return res.status(400).json({ error: error.message });
+  }
 
   next(error);
 };
 
 app.use(errorHandler);
-
-let persons = [
-  {
-    "name": "Arto Hellas",
-    "number": "040-123456",
-    "id": 1
-  },
-  {
-    "name": "Ada Lovelace",
-    "number": "39-44-5323523",
-    "id": 2
-  },
-  {
-    "name": "Dan Abramov",
-    "number": "12-43-234345",
-    "id": 3
-  },
-  {
-    "name": "Mary Poppendieck",
-    "number": "39-23-6423122",
-    "id": 4
-  }
-];
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
