@@ -40,9 +40,10 @@ app.get('/api/persons/:id', (req, res) => {
   }
 });
 
-app.delete('/api/persons/:id', (req, res) => {
+app.delete('/api/persons/:id', (req, res, error) => {
   Person.findByIdAndRemove(req.params.id)
-    .then(() => res.status(204).end());
+    .then(() => res.status(204).end())
+    .catch(error => next(error));
 });
 
 app.post('/api/persons', (req, res) => {
@@ -71,6 +72,18 @@ const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
 }
 app.use(unknownEndpoint);
+
+const errorHandler = (error, req, res, next) => {
+  console.log(error.message);
+
+  if ( error.name === 'CastError' && error.kind === 'ObjectId' ) {
+    return res.send(400).json({ error: 'marlformed id' });
+  }
+
+  next(error);
+};
+
+app.use(errorHandler);
 
 let persons = [
   {
